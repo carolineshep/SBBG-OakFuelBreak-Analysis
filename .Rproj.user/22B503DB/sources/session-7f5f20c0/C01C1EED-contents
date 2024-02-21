@@ -1,0 +1,33 @@
+---
+title: "Oak Fuel Break - Initial Analysis"
+author: "Caroline Shepherd"
+date: "2024-02-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Santa Barbara Botanic Garden's Oak Fuel Break - Data Analysis
+
+## This code aims to visualize and summarize mortality data from SBBG's Oak Fuel Break experiment. It has been made publically accessible, but these results have not been published, so please understand that we are still collecting data and making changes to this code.
+
+```{r}
+
+#load packages
+
+library(cowplot)
+library(tidyverse)
+library(janitor)
+library(here)
+
+```
+
+```{r}
+
+# read in the data
+
+oaks <- read.csv(here("oak_mortality_biomass_data.csv")) %>% clean_names()
+```
+
