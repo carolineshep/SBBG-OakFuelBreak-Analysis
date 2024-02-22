@@ -12,13 +12,13 @@
     "properties": {
         "expression": "oaks",
         "caption": "oaks",
-        "totalObservations": "216",
-        "displayedObservations": "216",
+        "totalObservations": "93",
+        "displayedObservations": "93",
         "variables": "14",
-        "cacheKey": "7FC7078F",
+        "cacheKey": "ED46FE35",
         "object": "oaks",
         "environment": "",
-        "contentUrl": "grid_resource/gridviewer.html?env=&obj=oaks&cache_key=7FC7078F&max_cols=50",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=oaks&cache_key=ED46FE35&max_cols=50",
         "preview": "0",
         "source_window_id": "",
         "Source": "Source"

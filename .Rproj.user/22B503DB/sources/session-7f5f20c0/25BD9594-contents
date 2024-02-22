@@ -1,0 +1,17 @@
+---
+title: "assignment1"
+author: "Caroline Shepherd"
+date: "3/30/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Blah Blah Blah first paragraph
+
+#Blah Blah Blah second paragraph
+```
+
