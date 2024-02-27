@@ -1,11 +1,11 @@
 {
     "id": "C01C1EED",
-    "path": "//oak/Users/cshepherd/SBBG_LiveFuelMoisture/oak_fuelbreak_analysis.Rmd",
-    "project_path": null,
+    "path": "//oak/Users/cshepherd/SBBG-OakFuelBreak-Analysis/oak_fuelbreak_analysis.Rmd",
+    "project_path": "oak_fuelbreak_analysis.Rmd",
     "type": "r_markdown",
     "hash": "800016767",
     "contents": "",
-    "dirty": true,
+    "dirty": false,
     "created": 1708556639419.0,
     "source_on_save": false,
     "relative_order": 1,
@@ -19,11 +19,11 @@
         "chunk_output_type": "console"
     },
     "folds": "",
-    "lastKnownWriteTime": 1708558656,
+    "lastKnownWriteTime": 1709065188,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1709064814229,
+    "last_content_update": 1709065188654,
     "read_only": false,
     "read_only_alternatives": []
 }
