@@ -46,8 +46,8 @@ oak_data <- read.csv(here("oak_mortality_biomass_data.csv")) %>% clean_names() %
 
 replanted_oaks <- oaks %>% filter(replanted == "1")
 
-oaks <- oaks %>% filter (replanted == "0") %>% 
-  summarise(n = sum(oaks, na.rm = TRUE))
+oaks <- oaks %>% filter(replanted == "0") %>% 
+  summarise(sum_oaks = sum(oaks, na.rm = TRUE))
 
 ```
 
