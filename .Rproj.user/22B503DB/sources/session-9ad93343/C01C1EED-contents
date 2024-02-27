@@ -47,15 +47,16 @@ oak_data <- read.csv(here("oak_mortality_biomass_data.csv")) %>% clean_names() %
 replanted_oaks <- oaks %>% filter(replanted == "1")
 
 oaks <- oaks %>% filter (replanted == "0") %>% 
-  mutate(summarise(n = sum(oaks, na.rm = TRUE))
+  summarise(n = sum(oaks, na.rm = TRUE))
 
 ```
 
 ```{r}
 
 #exploring the data
-ggplot(data = oaks, aes(y = tree_age, x = mortality_status_a_or_d)) +
-  geom_col() 
+ggplot(data = oaks, aes(y = mortality_status_a_or_d, x = tree_age)) +
+  geom_col() +
+  aes(color = plot)
 
 ```
 
