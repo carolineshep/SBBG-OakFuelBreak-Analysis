@@ -50,11 +50,17 @@ annie_oakley <- read_csv(here("Annie_Oakly.csv")) %>%
          wind_sp_mph = "Wind Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Speed)",
          gust_sp_mph = "Gust Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Gust Speed)",
          wind_direct = "Wind Direction, ø (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Direction)") %>%
-  mutate("date_time2" = as_datetime(mdy_hm("03/27/2024 9:03")))
+  mutate("date_time2" = (mdy_hm("03/27/2024 9:03"))) %>% 
+  separate(col = date_time2,
+           into = c("date", "time"),
+           sep = " ")
 
+annie_oakley$date <- ymd(annie_oakley$date)
 
-ggplot(data = annie_oakley, aes(x = date_time2, y = wind_sp_mph) +
-         geom_col()
+annie_oakley$time <- hm(annie_oakley$time)
+
+class(annie_oakley$date)
+class(annie_oakley)
 
 ```
 
