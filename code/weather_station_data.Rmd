@@ -24,10 +24,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 
 #load packages
-
 library(tidyverse)
 library(dplyr)
 library(here)
+library(cowplot)
 
 ```
 
@@ -51,6 +51,7 @@ annie_oakly <- read_csv(here("data", "Annie_Oakly.csv")) %>%
 # using lubridate to change date_time to date class
 annie_oakly$date_time_local <- parse_date_time(annie_oakly$date_time, "mdy HM")
 
+class(annie_oakly$date_time_local)
 
 # Reading in second weather station data
 oakie_dokie <- read_csv(here("data", "Oakie_Dokie_2.csv")) %>%
@@ -67,9 +68,9 @@ oakie_dokie <- read_csv(here("data", "Oakie_Dokie_2.csv")) %>%
 
 oakie_dokie$date_time_local <- parse_date_time(oakie_dokie$date_time, "mdy HM")
 
+class(oakie_dokie$date_time_local)
 
 # Initial plots for Annie Oakly
-
 ggplot(annie_oakly, aes(x = date_time_local, y = temp_f)) +
   geom_point() +
   geom_line() +
@@ -88,7 +89,6 @@ ggplot(annie_oakly, aes(x = date_time_local, y = soil_m3m3)) +
   theme_bw()
 
 # Initial plots for Oakie Dokie
-
 ggplot(oakie_dokie, aes(x = date_time_local, y = temp_f)) +
   geom_point() +
   geom_line() +
@@ -106,7 +106,25 @@ ggplot(oakie_dokie, aes(x = date_time_local, y = soil_m3m3)) +
   scale_x_datetime(breaks = "1 day") +
   theme_bw()
 
+#comparing soil moisture from both weather stations
+p1 <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = soil_m3m3),
+            color = "olivedrab4", size = .8) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = soil_m3m3),
+            color = "lightskyblue", size = .8) +
+  theme_bw() +
+  scale_x_datetime(breaks = "5 days") 
 
+p2 <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = prec_in),
+            color = "olivedrab4", size = .8) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = prec_in),
+            color = "lightskyblue", size = .8) +
+  theme_bw() +
+  scale_x_datetime(breaks = "5 days") 
+
+plot_grid(p1, p2, labels = c("Soil Moisture (m3/m3)", "Precipitation (in)"), label_size = 10)
+  
 ```
 
 
