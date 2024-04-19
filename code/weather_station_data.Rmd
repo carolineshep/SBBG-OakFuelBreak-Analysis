@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 
 #load packages
+
 library(tidyverse)
 library(dplyr)
 library(here)
@@ -50,7 +51,6 @@ annie_oakly <- read_csv(here("data", "Annie_Oakly.csv")) %>%
 # using lubridate to change date_time to date class
 annie_oakly$date_time_local <- parse_date_time(annie_oakly$date_time, "mdy HM")
 
-class(annie_oakly$date_time_local)
 
 # Reading in second weather station data
 oakie_dokie <- read_csv(here("data", "Oakie_Dokie_2.csv")) %>%
@@ -67,9 +67,9 @@ oakie_dokie <- read_csv(here("data", "Oakie_Dokie_2.csv")) %>%
 
 oakie_dokie$date_time_local <- parse_date_time(oakie_dokie$date_time, "mdy HM")
 
-class(oakie_dokie$date_time_local)
 
 # Initial plots for Annie Oakly
+
 ggplot(annie_oakly, aes(x = date_time_local, y = temp_f)) +
   geom_point() +
   geom_line() +
@@ -88,6 +88,7 @@ ggplot(annie_oakly, aes(x = date_time_local, y = soil_m3m3)) +
   theme_bw()
 
 # Initial plots for Oakie Dokie
+
 ggplot(oakie_dokie, aes(x = date_time_local, y = temp_f)) +
   geom_point() +
   geom_line() +
