@@ -1,0 +1,75 @@
+---
+title: "Marc's OFB code"
+author: "Caroline Shepherd"
+date: "2024-04-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#####HOBO Weather Station Data Quick View.
+
+##DATE: 19 Apr 2024
+##BY: M. Mayes, SIG-NAL/USU/UCSB
+##Contact: mmayes@sig-nal.org
+
+#working directory. Recommend setting relative paths in shared working file folders, this hard directory was just for late-night, quick data loading and inspection#
+setwd("C:/Users/mthom/Documents/SIGNAL/landscape_projects/sbbg/weather_data/sbbg_oak-weather_stations_v1/")
+
+#basic packages
+library(tidyverse)
+#particularly the lubridate package is helpful here
+#library(Rcpp)
+#library(caTools)
+
+
+d1 <- read.csv(here("Annie_Oakly_renamed_cols.csv"))
+
+#####1.  Load sample dataset#####
+#d1_filename <- "Annie_Oakly_renamed_cols.csv"
+
+#d1 <- read.csv(d1_filename)
+str(d1)
+names(d1)
+
+#####2. Use lubridate to parse input date format into recognizable datetime string in R#####
+#use lubridate to attempt auto-recognition of datetime character field
+#https://lubridate.tidyverse.org/reference/ymd_hms.html
+#https://stackoverflow.com/questions/74617095/convert-date-without-leading-zeros-in-lubridate
+
+#
+d1$datetime_local <- parse_date_time(d1$datetime_gmtm7,
+                                     "mdy HM")
+
+#####3. Plot the data!  A  first start with much more fun to follow######
+#tip: use scale_x_datetime for control of x axis date/time plotting preferences. Lots of options.  See link below:
+#https://ggplot2.tidyverse.org/reference/scale_date.html
+
+#a little reminder of the variable names by column in the dataframe:
+names(d1)
+
+#temperature plot
+ggplot(d1, aes(x=datetime_local, y=temp_f))+
+  geom_point()+
+  geom_line()+
+  scale_x_datetime(breaks="1 day")+
+  theme_bw()
+
+#rainfall plot
+ggplot(d1, aes(x=datetime_local, y=pcp_in))+
+  geom_col()+
+  scale_x_datetime(breaks="1 day")+
+  theme_bw()
+
+
+##Happy to collaboate on further plotting of weather data together!##
+
+#END (for now)
+
+
+```
+

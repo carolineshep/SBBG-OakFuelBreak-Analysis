@@ -25,11 +25,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #load packages
 
-library(cowplot)
 library(tidyverse)
-library(janitor)
 library(here)
-library(dplyr)
 library(lubridate)
 
 ```
@@ -50,18 +47,18 @@ annie_oakley <- read_csv(here("Annie_Oakly.csv")) %>%
          wind_sp_mph = "Wind Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Speed)",
          gust_sp_mph = "Gust Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Gust Speed)",
          wind_direct = "Wind Direction, ø (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Direction)") %>%
-  mutate("date_time2" = (mdy_hm("03/27/2024 9:03"))) %>% 
-  separate(col = date_time2,
-           into = c("date", "time"),
-           sep = " ")
+  mutate("date_time2" = (mdy_hm("03/27/2024 9:03")))
 
-annie_oakley$date <- ymd(annie_oakley$date)
+annie_oakley$date_time <- parse_date_time(annie_oakley$date_time, "mdy HM")
 
-annie_oakley$time <- hm(annie_oakley$time)
+class(annie_oakley$date_time2) #checking class - this one worked
+class(annie_oakley$time) # this one didn't
 
-class(annie_oakley$date)
-class(annie_oakley)
-
+ggplot(annie_oakley, aes(x = date_time2, y = temp_f)) +
+  geom_point() +
+  geom_line() +
+  scale_x_datetime(breaks = "1 day") +
+  theme_bw()
 ```
 
 

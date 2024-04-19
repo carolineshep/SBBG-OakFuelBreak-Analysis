@@ -25,11 +25,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #load packages
 
-library(cowplot)
 library(tidyverse)
-library(janitor)
 library(here)
-library(dplyr)
 library(lubridate)
 
 ```
@@ -50,16 +47,17 @@ annie_oakley <- read_csv(here("Annie_Oakly.csv")) %>%
          wind_sp_mph = "Wind Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Speed)",
          gust_sp_mph = "Gust Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Gust Speed)",
          wind_direct = "Wind Direction, ø (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Direction)") %>%
-  mutate("date_time2" = as_datetime(mdy_hm("03/27/2024 9:03"))) %>% 
-  separate(date_time2, c("date", "time"), sep = " ") %>% 
-  mutate(day = as_date("2024-03-27") - 0:364,
-             value = runif(365) + seq(-140, 224)^2 / 10000)
+  mutate("date_time2" = (mdy_hm("03/27/2024 9:03"))) %>% 
+  separate(col = date_time2,
+           into = c("date", "time"),
+           sep = " ")
 
+annie_oakley$date <- ymd(annie_oakley$date)
 
-annie_oakley %>% 
-ggplot(aes(x = date, y = wind_sp_mph)) +
-         geom_line()
+annie_oakley$time <- hm(annie_oakley$time)
 
+class(annie_oakley$date)
+class(annie_oakley$time)
 
 ```
 
