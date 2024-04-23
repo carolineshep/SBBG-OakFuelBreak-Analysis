@@ -21,6 +21,12 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+## Introduction
+This code aims to visualize and synthesize data from SBBG's two weather stations. The weather stations are located within the canopy of a large Quercus agrifolia (Annie Oakly), and next to our growing oak seedlings in an open space (Oakie Dokie). 
+
+The Oak Fuel Break experiment was designed to see if Coast Live Oak trees can provide a living fuel break, by influencing fire weather paramenters. Fire parameters include solar radiation, wind speed and direction, soil moisture, rainfall, temperature, and humidity. The following code visualizes and compares the data from two weather stations, where one is in a shaded oak area, and the other is exposed.
+
 ```{r}
 
 #load packages
@@ -31,7 +37,7 @@ library(cowplot)
 
 ```
 
-
+### Initial data exploration
 ```{r}
 
 # Read in the data
@@ -106,8 +112,13 @@ ggplot(oakie_dokie, aes(x = date_time_local, y = soil_m3m3)) +
   scale_x_datetime(breaks = "1 day") +
   theme_bw()
 
+```
+
+
+### Comparisons between parameters by weather station
+```{r}
 #comparing soil moisture from both weather stations
-p1 <- ggplot() +
+soil_compare <- ggplot() +
   geom_line(data = annie_oakly, aes(x = date_time_local, y = soil_m3m3),
             color = "olivedrab4", size = .8) +
   geom_line(data = oakie_dokie, aes(x = date_time_local, y = soil_m3m3),
@@ -115,7 +126,7 @@ p1 <- ggplot() +
   theme_bw() +
   scale_x_datetime(breaks = "5 days") 
 
-p2 <- ggplot() +
+rain_compare <- ggplot() +
   geom_line(data = annie_oakly, aes(x = date_time_local, y = prec_in),
             color = "olivedrab4", size = .8) +
   geom_line(data = oakie_dokie, aes(x = date_time_local, y = prec_in),
@@ -123,7 +134,27 @@ p2 <- ggplot() +
   theme_bw() +
   scale_x_datetime(breaks = "5 days") 
 
-plot_grid(p1, p2, labels = c("Soil Moisture (m3/m3)", "Precipitation (in)"), label_size = 10)
+plot_grid(soil_compare, rain_compare, labels = c("Soil Moisture (m3/m3)", "Precipitation (in)"), label_size = 10)
+
+
+#more comparisons
+wind_compare <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = wind_sp_mph),
+            color = "blue4", size = .8) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = wind_sp_mph),
+            color = "lightskyblue4", size = .8) +
+  theme_bw() +
+  scale_x_datetime(breaks = "5 days") 
+
+sun_compare <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = solar_rad_wm2),
+            color = "red4", size = .8) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = solar_rad_wm2),
+            color = "orange2", size = .8) +
+  theme_bw() +
+  scale_x_datetime(breaks = "5 days") 
+
+plot_grid(wind_compare, sun_compare, labels = c("Soil Moisture (m3/m3)", "Precipitation (in)"), label_size = 10)
   
 ```
 
