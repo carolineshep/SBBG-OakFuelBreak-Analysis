@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Introduction
 This code aims to visualize and synthesize data from SBBG's two weather stations. The weather stations are located within the canopy of a large Quercus agrifolia (Annie Oakly), and next to our growing oak seedlings in an open space (Oakie Dokie). 
 
-The Oak Fuel Break experiment was designed to see if Coast Live Oak trees can provide a living fuel break, by influencing fire weather paramenters. Fire parameters include solar radiation, wind speed and direction, soil moisture, rainfall, temperature, and humidity. The following code visualizes and compares the data from two weather stations, where one is in a shaded oak area, and the other is exposed.
+The Oak Fuel Break experiment was designed to see if Coast Live Oak trees can provide a living fuel break, by influencing fire weather paramenters. Fire parameters include solar radiation, wind speed and direction, soil moisture, rainfall, temperature, and humidity. The following code visualizes and compares the data from two weather stations, where one is in a shaded oak area, and the other is exposed. 
 
 ```{r}
 
