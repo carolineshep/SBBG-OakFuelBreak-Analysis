@@ -57,7 +57,7 @@ og_oaks <- oak_data %>% filter(replanted == "0") %>%
 #exploring the data
 ggplot(data = og_oaks, aes(y = mortality_status_a_or_d, x = tree_age)) +
   geom_col() +
-  aes(color = plot)
+  aes(color = plot) 
 
 ```
 
