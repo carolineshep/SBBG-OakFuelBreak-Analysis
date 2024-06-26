@@ -40,7 +40,7 @@ library(here)
 
 # read in the data
 
-oak_data <- read.csv(here("data","mortality_biomass",'oak_mortality_biomass_data.csv")) %>% clean_names() %>% group_by(replanted)
+oak_data <- read.csv(here("oak_mortality_biomass_data.csv")) %>% clean_names() %>% group_by(replanted)
 
 # creating groups for replanted trees and original plantings
 
@@ -58,6 +58,8 @@ og_oaks <- oak_data %>% filter(replanted == "0") %>%
 ggplot(data = og_oaks, aes(y = mortality_status_a_or_d, x = tree_age)) +
   geom_col() +
   aes(color = plot) 
+
+#needs work
 
 ```
 

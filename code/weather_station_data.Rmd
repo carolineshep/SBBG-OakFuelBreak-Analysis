@@ -42,7 +42,7 @@ library(cowplot)
 
 # Read in the data
 # Immediately changing wacky column names
-annie_oakly <- read_csv(here("data", "Annie_Oakly.csv")) %>% 
+annie_oakly <- read_csv(here("data", "annie_oakly_raw", "Annie_Oakly_7Jun2024.csv")) %>% 
   rename(id = "#",
          date_time = "Date Time, GMT-07:00",
          temp_f = "Temp, °F (LGR S/N: 21901550, SEN S/N: 21895909, LBL: Temperature)",
