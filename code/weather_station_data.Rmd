@@ -23,9 +23,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ## Introduction
-This code aims to visualize and synthesize data from SBBG's two weather stations. The weather stations are located within the canopy of a large Quercus agrifolia (Annie Oakly), and next to our growing oak seedlings in an open space (Oakie Dokie). 
+This code aims to visualize and synthesize data from SBBG's two weather stations, funded by SIGNAL and RWMP. The weather stations are located within the canopy of a large Quercus agrifolia (Annie Oakly), and next to our growing oak seedlings in an open space (Oakie Dokie). 
 
 The Oak Fuel Break experiment was designed to see if Coast Live Oak trees can provide a living fuel break, by influencing fire weather paramenters. Fire parameters include solar radiation, wind speed and direction, soil moisture, rainfall, temperature, and humidity. The following code visualizes and compares the data from two weather stations, where one is in a shaded oak area, and the other is exposed. 
+
 
 ```{r}
 
@@ -60,7 +61,7 @@ annie_oakly$date_time_local <- parse_date_time(annie_oakly$date_time, "mdy HM")
 class(annie_oakly$date_time_local)
 
 # Reading in second weather station data
-oakie_dokie <- read_csv(here("data", "Oakie_Dokie_2.csv")) %>%
+oakie_dokie <- read_csv(here("data", "oakie_dokie_raw", "Oakie_Dokie_7Jun2024.csv")) %>%
   rename(id = "#",
          date_time = "Date Time, GMT-08:00",
          temp_f = "Temp, °F (LGR S/N: 21901549, SEN S/N: 21895908, LBL: Temp)",
@@ -98,7 +99,7 @@ ggplot(annie_oakly, aes(x = date_time_local, y = soil_m3m3)) +
 ggplot(oakie_dokie, aes(x = date_time_local, y = temp_f)) +
   geom_point() +
   geom_line() +
-  scale_x_datetime(breaks = "1 day") +
+  scale_x_datetime(breaks = "1 month") +
   theme_bw()
 
 ggplot(oakie_dokie, aes(x=date_time_local, y=prec_in))+
@@ -159,5 +160,8 @@ plot_grid(wind_compare, sun_compare, labels = c("Soil Moisture (m3/m3)", "Precip
 ```
 
 
+## Future ideas:
 
+Comparison priorities:
+- 
 
