@@ -38,16 +38,26 @@ library(here)
 
 ```{r}
 
-# read in the data
+# read in the data and clean it up. Clean names and change the As and Ds to 1s and 0s for easier calculations
+oak_data <- read.csv(here("data", "mortality_biomass", "oak_mortality_biomass_data_jul2024.csv")) %>% 
+  clean_names() %>%
+  mutate(mortality_status = recode(mortality_status_a_or_d, A = '1', D = '0')) %>% 
+  group_by(plot)
 
-oak_data <- read.csv(here("oak_mortality_biomass_data.csv")) %>% clean_names() %>% group_by(replanted)
+oak_data$mortality_status1 = as.numeric(oak_data$mortality_status)
 
-# creating groups for replanted trees and original plantings
+# making sure R knows dates are dates (lbd is short for lubridate)
+oak_data$date_lbd <- parse_date_time(oak_data$date, "ymd")
 
-replanted_oaks <- oak_data %>% filter(replanted == "1") %>% 
+# creating datasets for replanted trees and original plantings
+replanted_oaks <- oak_data %>% filter(replanted == "1")
+
+replanted_oaks_total <- oak_data %>% filter(replanted == "1") %>% 
   summarise(sum_replant_alive = sum(replanted))
 
-og_oaks <- oak_data %>% filter(replanted == "0") %>% 
+og_oaks <- oak_data %>% filter(replanted == "0")
+
+og_oaks_total <- oak_data %>% filter(replanted == "0") %>% 
   summarise(sum_og_alive = sum(replanted))
 
 ```
@@ -55,11 +65,86 @@ og_oaks <- oak_data %>% filter(replanted == "0") %>%
 ```{r}
 
 #exploring the data
-ggplot(data = og_oaks, aes(y = mortality_status_a_or_d, x = tree_age)) +
-  geom_col() +
-  aes(color = plot) 
 
-#needs work
+mort_plot <- oak_data %>% 
+  filter(replanted == "0") %>% 
+  group_by(plot) %>% 
+  summarise(mort_sum = sum(mortality_status1, na.rm = TRUE))
+
+ggplot(data = mort_plot, aes(y = mort_sum, x = plot)) +
+  geom_col() +
+  labs(x = "Plot ID",
+       y = "Total Trees Alive",
+       title = "Original Oak Trees: Total number still alive (June 2024)") +
+  theme_bw()
+
+
+mort_age_plot <- oak_data %>% 
+  filter(replanted == "0") %>% 
+  group_by(plot, tree_age) %>% 
+  summarise(mort_sum = sum(mortality_status1, na.rm = TRUE))
+  
+
+ggplot(data = mort_age_plot, aes(y = mort_sum, x = tree_age, group_by(plot))) +
+  geom_col() +
+  labs(x = "Plot ID",
+       y = "Total Trees Alive",
+       title = "Original Oak Trees: Total number still alive (June 2024)") +
+  theme_bw()
+
+```
+
+
+```{r}
+
+# Analysis by plot
+
+# Plot 1
+
+p1_mort_plot <- oak_data %>% 
+  filter(plot == "1",
+         replanted == "0") %>% 
+  group_by(tree_age) %>% 
+  summarise(mort_sum = mortality_status1, na.rm = TRUE)
+
+ggplot(data = p1_mort_plot, aes(x = tree_age, y = mort_sum)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Age of Tree",
+       y = "Number of Trees Alive",
+       title = "Number of living trees in plot 1 grouped by age of tree when planted")
+
+# Plot 2
+
+p2_mort_plot <- oak_data %>% 
+  filter(plot == "2",
+         replanted == "0") %>% 
+  group_by(tree_age) %>% 
+  summarise(mort_sum = mortality_status1, na.rm = TRUE)
+
+ggplot(data = p2_mort_plot, aes(x = tree_age, y = mort_sum)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Age of Tree",
+       y = "Number of Trees Alive",
+       title = "Number of living trees in plot 2 grouped by age of tree when planted")
+
+# Plot 3
+
+p3_mort_plot <- oak_data %>% 
+  filter(plot == "3",
+         replanted == "0") %>% 
+  group_by(tree_age) %>% 
+  summarise(mort_sum = mortality_status1, na.rm = TRUE)
+
+ggplot(data = p3_mort_plot, aes(x = tree_age, y = mort_sum)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Age of Tree",
+       y = "Number of Trees Alive",
+       title = "Number of living trees in plot 3 grouped by age of tree when planted")
+
+# need to combine these somehow
 
 ```
 
