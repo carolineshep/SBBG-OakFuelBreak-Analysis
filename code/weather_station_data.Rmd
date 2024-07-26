@@ -121,23 +121,34 @@ ggplot(avg_temp_day_ao, aes(x = date_lbd, y = avg_temp)) +
   theme_bw() +
   scale_x_datetime(breaks = "10 days") +
   labs(x = "Date", 
-       y = "Daily Average Temperature (F)")
+       y = "Daily Average Temperature (F)",
+       title = "Annie Oakly Daily Average Temperature (F)")
   
  
 ggplot(annie_oakly, aes(x=date_time_local, y=prec_in))+
   geom_col()+
-    labs(x = "Date",
+  scale_y_continuous(limits = c(0, 0.15)) +
+  labs(x = "Date",
        y = "Precipitation (in)",
        title = "Annie Oakly Recorded Precipitation") +
   scale_x_datetime(breaks="15 days")+
   theme_bw()
  
 ggplot(annie_oakly, aes(x = date_time_local, y = soil_m3m3)) +
-  geom_point() +
+  geom_point(size = 1) +
   geom_line() +
     labs(x = "Date",
        y = "Soil Moisture (m^3/m^3)",
        title = "Annie Oakly Recorded Soil Moisture") +
+  scale_x_datetime(breaks = "15 day") +
+  theme_bw()
+
+ggplot(annie_oakly, aes(x = date_time_local, y = wind_sp_mph)) +
+  #geom_point(size = 1) +
+ geom_line() +
+    labs(x = "Date",
+       y = "Wind Speed (km/hr)",
+       title = "Annie Oakly Recorded Wind Speed") +
   scale_x_datetime(breaks = "15 day") +
   theme_bw()
 
@@ -147,7 +158,7 @@ ggplot(annie_oakly, aes(x = date_time_local, y = soil_m3m3)) +
 #############################################################################
 
 ggplot(oakie_dokie, aes(x = date_time_local, y = temp_f)) +
- # geom_point(size = 1) +
+ geom_point(size = 1) +
   geom_line() +
     labs(x = "Date",
        y = "Temperature (F)",
@@ -161,13 +172,15 @@ ggplot(avg_temp_day_od, aes(x = date_lbd, y = avg_temp)) +
   theme_bw() +
   scale_x_datetime(breaks = "10 days") +
   labs(x = "Date", 
-       y = "Daily Average Temperature (F)")
+       y = "Daily Average Temperature (F)",
+       title = "Oakie Dokie Daily Average Temperature (F)")
  
 ggplot(oakie_dokie, aes(x=date_time_local, y=prec_in))+
   geom_col()+
+   scale_y_continuous(limits = c(0, 0.15)) +
     labs(x = "Date",
        y = "Precipitation",
-       title = "Oaky Dokie Recorded Precipitation") +
+       title = "Oakie Dokie Recorded Precipitation") +
   scale_x_datetime(breaks="15 day")+
   theme_bw()
  
@@ -176,7 +189,7 @@ ggplot(oakie_dokie, aes(x = date_time_local, y = soil_m3m3)) +
   geom_line() +
     labs(x = "Data",
        y = "Soil Moisture (m^3/m^3)",
-       title = "Oaky Dokie Recorded Soil Moisture") +
+       title = "Oakie Dokie Recorded Soil Moisture") +
   scale_x_datetime(breaks = "15 day") +
   theme_bw()
  
@@ -189,20 +202,43 @@ I'm not happy with the following graphs yet. I tried to add a legend, but wasn't
 ```{r}
 #comparing soil moisture from both weather stations
 soil_compare <- ggplot() +
-  geom_line(data = annie_oakly, aes(x = date_time_local, y = soil_m3m3),
-            color = "olivedrab4", size = .8) +
-  geom_line(data = oakie_dokie, aes(x = date_time_local, y = soil_m3m3),
-            color = "lightskyblue", size = .8) +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = soil_m3m3, 
+                                    color = "Annie Oakly")) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = soil_m3m3, 
+                                    color = "Oakie Dokie")) +
   theme_bw() +
-  scale_x_datetime(breaks = "15 days") 
+  scale_x_datetime(breaks = "15 days") +
+  labs(x = "Date",
+       y = "Soil Moisture (m3/m3)")+
+  theme(legend.title=element_blank())
+
+soil_compare
 
 rain_compare <- ggplot() +
-  geom_line(data = annie_oakly, aes(x = date_time_local, y = prec_in),
-            color = "olivedrab4", size = .8) +
-  geom_line(data = oakie_dokie, aes(x = date_time_local, y = prec_in),
-            color = "lightskyblue", size = .8) +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = prec_in, 
+                                    color = "Annie Oakly")) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = prec_in, 
+                                    color = "Oakie Dokie")) +
   theme_bw() +
-  scale_x_datetime(breaks = "15 days") 
+  scale_x_datetime(breaks = "15 days") +
+  labs(x = "Date",
+       y = "Precipitation (in)") +
+  theme(legend.title=element_blank())
+
+rain_compare
+
+temp_compare <- ggplot() +
+  geom_line(data = avg_temp_day_ao, aes(x = date_lbd, y = avg_temp, 
+                                     color = "Annie Oakly"), size = 1) +
+  geom_line(data = avg_temp_day_od, aes(x = date_lbd, y = avg_temp,
+                                    color = "Oakie Dokie"), size = 1)+
+  theme_bw() +
+  scale_x_datetime(breaks = "15 days") +
+  labs(x = "Date",
+       y = "Temperature (F)") +
+  theme(legend.title=element_blank())
+
+temp_compare
 
 plot_grid(soil_compare, rain_compare, labels = c("Soil Moisture (m3/m3)", "Precipitation (in)"), label_size = 10)
 
