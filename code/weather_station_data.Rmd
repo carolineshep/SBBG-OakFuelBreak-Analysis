@@ -102,6 +102,14 @@ avg_temp_day_ao <- date_separate_ao %>%
   group_by(date_lbd) %>% 
   summarise(avg_temp = mean(temp_f))
 
+extr_temp_day_ao <- date_separate_ao %>%
+  group_by(date_lbd) %>%
+  summarise(avg_temp = mean(temp_f),
+            min_temp = min(temp_f),
+            max_temp = max(temp_f))
+
+            
+
 ################################################################################
 # Initial plots for Annie Oakly
 ################################################################################
