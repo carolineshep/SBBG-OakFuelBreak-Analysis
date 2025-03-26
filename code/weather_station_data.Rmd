@@ -106,15 +106,20 @@ avg_temp_day_ao <- date_separate_ao %>%
 extr_temp_day_ao <- date_separate_ao %>%
   group_by(date_lbd) %>%
   summarise(avg_temp = mean(temp_f),
+            med_temp = median(temp_f),
             min_temp = min(temp_f),
-            max_temp = max(temp_f))
+            max_temp = max(temp_f),
+            cv_temp = sd(temp_f)/avg_temp)
 
 
 #lengthen dataframe for plotting extreme temps together.
 extr_temp_day_ao_long <- pivot_longer(extr_temp_day_ao,
-                                      cols=avg_temp:max_temp,
+                                      cols=avg_temp:cv_temp,
                                       names_to=c("ttype"),
                                       values_to="temp_f")
+
+
+
 
 
 ################################################################################
