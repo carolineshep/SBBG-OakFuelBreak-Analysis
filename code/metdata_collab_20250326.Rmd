@@ -1,0 +1,293 @@
+---
+title: "Weather Station Data"
+authors: "Caroline Shepherd", "Team at SBBG", "M. Mayes", "Team at SIGNAL"
+date: "2025-03-26"
+output:
+  html_document:
+    theme: cerulean
+    code_folding: hide
+    highlight: monochrome
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+    collapsed: yes
+    smooth_scroll: yes
+    number_sections: no
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introduction
+This code aims to visualize and synthesize data from SBBG's two weather stations, funded by SIGNAL and RWMP. The weather stations are located within the canopy of a large Quercus agrifolia (Annie Oakly), and next to our growing oak seedlings in an open space (Oakie Dokie). 
+
+The Oak Fuel Break experiment was designed to see if Coast Live Oak trees can provide a living fuel break, by influencing the microclimate underneath the oaks. Weather parameters included in this study solar radiation, wind speed and direction, soil moisture, rainfall, temperature, and humidity. The following code visualizes and compares the data from two weather stations, where one is in a shaded oak area, and the other is exposed. 
+
+
+```{r}
+
+#load packages
+library(tidyverse)
+library(dplyr)
+library(here)
+library(cowplot)
+
+```
+
+### Initial data exploration
+```{r}
+
+# Read in the data
+# Immediately changing wacky column names
+annie_oakly <- read_csv(here("data", "annie_oakly_raw", "Annie_Oakly_7Jun2024.csv")) %>% 
+  rename(id = "#",
+         date_time = "Date Time, GMT-07:00",
+         temp_f = "Temp, °F (LGR S/N: 21901550, SEN S/N: 21895909, LBL: Temperature)",
+         rh_percent = "RH, % (LGR S/N: 21901550, SEN S/N: 21895909, LBL: RH)",
+         solar_rad_wm2 = "Solar Radiation, W/m² (LGR S/N: 21901550, SEN S/N: 21903642, LBL: Solar Radiation)",
+         prec_in = "Rain, in (LGR S/N: 21901550, SEN S/N: 21907472, LBL: Rain)",
+         soil_m3m3 = "Water Content, m³/m³ (LGR S/N: 21901550, SEN S/N: 21907600, LBL: Water Content)",
+         wind_sp_mph = "Wind Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Speed)",
+         gust_sp_mph = "Gust Speed, mph (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Gust Speed)",
+         wind_direct = "Wind Direction, ø (LGR S/N: 21901550, SEN S/N: 21907851, LBL: Wind Direction)") 
+
+# using lubridate to change date_time to date class
+annie_oakly$date_time_local <- parse_date_time(annie_oakly$date_time, "mdy HM")
+
+class(annie_oakly$date_time_local)
+
+# Reading in second weather station data
+oakie_dokie <- read_csv(here("data", "oakie_dokie_raw", "Oakie_Dokie_7Jun2024.csv")) %>%
+  rename(id = "#",
+         date_time = "Date Time, GMT-08:00",
+         temp_f = "Temp, °F (LGR S/N: 21901549, SEN S/N: 21895908, LBL: Temp)",
+         rh_percent = "RH, % (LGR S/N: 21901549, SEN S/N: 21895908, LBL: RH)",
+         solar_rad_wm2 = "Solar Radiation, W/m² (LGR S/N: 21901549, SEN S/N: 21903641, LBL: Solar Radiation)",
+         prec_in = "Rain, in (LGR S/N: 21901549, SEN S/N: 21907471, LBL: Rain)",
+         soil_m3m3 = "Water Content, m³/m³ (LGR S/N: 21901549, SEN S/N: 21900338, LBL: Water Content)",
+         wind_sp_mph = "Wind Speed, mph (LGR S/N: 21901549, SEN S/N: 21907852, LBL: Wind Speed)",
+         gust_sp_mph = "Gust Speed, mph (LGR S/N: 21901549, SEN S/N: 21907852, LBL: Gust Speed)",
+         wind_direct = "Wind Direction, ø (LGR S/N: 21901549, SEN S/N: 21907852, LBL: Wind Direction)") 
+
+oakie_dokie$date_time_local <- parse_date_time(oakie_dokie$date_time, "mdy HM")
+
+class(oakie_dokie$date_time_local)
+
+
+#separating day and time into two columns for Oakie Dokey for use in later figures
+date_separate_od <- separate(oakie_dokie, 
+                             col=date_time_local, 
+                             into=c('date', 'time'), 
+                             sep=' ')
+
+avg_temp_day_od <- date_separate_od %>% 
+  group_by(date) %>% 
+  summarise(avg_temp = mean(temp_f))
+
+avg_temp_day_od$date_lbd <- parse_date_time(avg_temp_day_od$date, "ymd")
+
+#separating day and time into two columns for Annie Oakly for use in later figures
+date_separate_ao <- separate(annie_oakly, 
+                             col=date_time_local, 
+                             into=c('date', 'time'), 
+                             sep=' ')
+
+date_separate_ao$date_lbd <- parse_date_time(date_separate_ao$date, "ymd")
+
+avg_temp_day_ao <- date_separate_ao %>% 
+  group_by(date_lbd) %>% 
+  summarise(avg_temp = mean(temp_f))
+
+#adding daily temperature extremes to dataframe.
+extr_temp_day_ao <- date_separate_ao %>%
+  group_by(date_lbd) %>%
+  summarise(avg_temp = mean(temp_f),
+            min_temp = min(temp_f),
+            max_temp = max(temp_f))
+
+
+#lengthen dataframe for plotting extreme temps together.
+extr_temp_day_ao_long <- pivot_longer(extr_temp_day_ao,
+                                      cols=avg_temp:max_temp,
+                                      names_to=c("ttype"),
+                                      values_to="temp_f")
+
+
+################################################################################
+# Initial plots for Annie Oakly
+################################################################################
+ggplot(annie_oakly, aes(x = date_time_local, y = temp_f)) +
+ # geom_point() +
+  geom_line() +
+    labs(x = "Date",
+       y = "Temperature (F)",
+       title = "Annie Oakly Recorded Temperatures") +
+  scale_x_datetime(breaks = "15 days") +
+  theme_bw()
+
+
+ggplot(avg_temp_day_ao, aes(x = date_lbd, y = avg_temp)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  scale_x_datetime(breaks = "10 days") +
+  labs(x = "Date", 
+       y = "Daily Average Temperature (F)",
+       title = "Annie Oakly Daily Average Temperature (F)")
+
+#daily_temp_extremes_plot:
+ggplot(extr_temp_day_ao_long, aes(x = date_lbd, y = temp_f, by=ttype)) +
+  geom_point(aes(color=ttype)) +
+  geom_line(aes(color=ttype)) +
+  theme_bw() +
+  scale_x_datetime(breaks = "10 days") +
+  labs(x = "Date", 
+       y = "Temperature (F)",
+       title = "Annie Oakly Diurnal Average and Min/Max Temperatures (F)")
+  
+ 
+ggplot(annie_oakly, aes(x=date_time_local, y=prec_in))+
+  geom_col()+
+  scale_y_continuous(limits = c(0, 0.15)) +
+  labs(x = "Date",
+       y = "Precipitation (in)",
+       title = "Annie Oakly Recorded Precipitation") +
+  scale_x_datetime(breaks="15 days")+
+  theme_bw()
+ 
+ggplot(annie_oakly, aes(x = date_time_local, y = soil_m3m3)) +
+  geom_point(size = 1) +
+  geom_line() +
+    labs(x = "Date",
+       y = "Soil Moisture (m^3/m^3)",
+       title = "Annie Oakly Recorded Soil Moisture") +
+  scale_x_datetime(breaks = "15 day") +
+  theme_bw()
+
+ggplot(annie_oakly, aes(x = date_time_local, y = wind_sp_mph)) +
+  #geom_point(size = 1) +
+ geom_line() +
+    labs(x = "Date",
+       y = "Wind Speed (km/hr)",
+       title = "Annie Oakly Recorded Wind Speed") +
+  scale_x_datetime(breaks = "15 day") +
+  theme_bw()
+
+
+#############################################################################
+#Initial Oakie Dokie Figures
+#############################################################################
+
+ggplot(oakie_dokie, aes(x = date_time_local, y = temp_f)) +
+ geom_point(size = 1) +
+  geom_line() +
+    labs(x = "Date",
+       y = "Temperature (F)",
+       title = "Oakie Dokie Recorded Temperatures") +
+  scale_x_datetime(breaks = "15 days") +
+  theme_bw()
+
+ggplot(avg_temp_day_od, aes(x = date_lbd, y = avg_temp)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  scale_x_datetime(breaks = "10 days") +
+  labs(x = "Date", 
+       y = "Daily Average Temperature (F)",
+       title = "Oakie Dokie Daily Average Temperature (F)")
+ 
+ggplot(oakie_dokie, aes(x=date_time_local, y=prec_in))+
+  geom_col()+
+   scale_y_continuous(limits = c(0, 0.15)) +
+    labs(x = "Date",
+       y = "Precipitation",
+       title = "Oakie Dokie Recorded Precipitation") +
+  scale_x_datetime(breaks="15 day")+
+  theme_bw()
+ 
+ggplot(oakie_dokie, aes(x = date_time_local, y = soil_m3m3)) +
+  geom_point(size = 1) +
+  geom_line() +
+    labs(x = "Data",
+       y = "Soil Moisture (m^3/m^3)",
+       title = "Oakie Dokie Recorded Soil Moisture") +
+  scale_x_datetime(breaks = "15 day") +
+  theme_bw()
+ 
+```
+
+
+### Comparisons between parameters by weather station
+
+I'm not happy with the following graphs yet. I tried to add a legend, but wasn't able to. I also think it's hard to see both data points. Maybe they should be slightly transparent?
+```{r}
+#comparing soil moisture from both weather stations
+soil_compare <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = soil_m3m3, 
+                                    color = "Annie Oakly")) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = soil_m3m3, 
+                                    color = "Oakie Dokie")) +
+  theme_bw() +
+  scale_x_datetime(breaks = "15 days") +
+  labs(x = "Date",
+       y = "Soil Moisture (m3/m3)")+
+  theme(legend.title=element_blank())
+
+soil_compare
+
+rain_compare <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = prec_in, 
+                                    color = "Annie Oakly")) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = prec_in, 
+                                    color = "Oakie Dokie")) +
+  theme_bw() +
+  scale_x_datetime(breaks = "15 days") +
+  labs(x = "Date",
+       y = "Precipitation (in)") +
+  theme(legend.title=element_blank())
+
+rain_compare
+
+temp_compare <- ggplot() +
+  geom_line(data = avg_temp_day_ao, aes(x = date_lbd, y = avg_temp, 
+                                     color = "Annie Oakly"), size = 1) +
+  geom_line(data = avg_temp_day_od, aes(x = date_lbd, y = avg_temp,
+                                    color = "Oakie Dokie"), size = 1)+
+  theme_bw() +
+  scale_x_datetime(breaks = "15 days") +
+  labs(x = "Date",
+       y = "Temperature (F)") +
+  theme(legend.title=element_blank())
+
+temp_compare
+
+plot_grid(soil_compare, rain_compare, labels = c("Soil Moisture (m3/m3)", "Precipitation (in)"), label_size = 10)
+
+
+#more comparisons
+wind_compare <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = wind_sp_mph),
+            color = "blue4", size = .8) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = wind_sp_mph),
+            color = "lightskyblue4", size = .8) +
+  theme_bw() +
+  scale_x_datetime(breaks = "15 days") 
+
+sun_compare <- ggplot() +
+  geom_line(data = annie_oakly, aes(x = date_time_local, y = solar_rad_wm2),
+            color = "red4", size = .8) +
+  geom_line(data = oakie_dokie, aes(x = date_time_local, y = solar_rad_wm2),
+            color = "orange2", size = .8) +
+  theme_bw() +
+  scale_x_datetime(breaks = "15 days") 
+
+plot_grid(wind_compare, sun_compare, labels = c("Wind Speed (MPH)", "Solar Radiation (wm2)"), label_size = 10)
+  
+```
+
+
+
