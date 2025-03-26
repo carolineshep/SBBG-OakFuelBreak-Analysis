@@ -102,13 +102,20 @@ avg_temp_day_ao <- date_separate_ao %>%
   group_by(date_lbd) %>% 
   summarise(avg_temp = mean(temp_f))
 
+#adding daily temperature extremes to dataframe.
 extr_temp_day_ao <- date_separate_ao %>%
   group_by(date_lbd) %>%
   summarise(avg_temp = mean(temp_f),
             min_temp = min(temp_f),
             max_temp = max(temp_f))
 
-            
+
+#lengthen dataframe for plotting extreme temps together.
+extr_temp_day_ao_long <- pivot_longer(extr_temp_day_ao,
+                                      cols=avg_temp:max_temp,
+                                      names_to=c("ttype"),
+                                      values_to="temp_f")
+
 
 ################################################################################
 # Initial plots for Annie Oakly
@@ -131,6 +138,16 @@ ggplot(avg_temp_day_ao, aes(x = date_lbd, y = avg_temp)) +
   labs(x = "Date", 
        y = "Daily Average Temperature (F)",
        title = "Annie Oakly Daily Average Temperature (F)")
+
+#daily_temp_extremes_plot:
+ggplot(extr_temp_day_ao_long, aes(x = date_lbd, y = temp_f, by=ttype)) +
+  geom_point(aes(color=ttype)) +
+  geom_line(aes(color=ttype)) +
+  theme_bw() +
+  scale_x_datetime(breaks = "10 days") +
+  labs(x = "Date", 
+       y = "Temperature (F)",
+       title = "Annie Oakly Diurnal Average and Min/Max Temperatures (F)")
   
  
 ggplot(annie_oakly, aes(x=date_time_local, y=prec_in))+
